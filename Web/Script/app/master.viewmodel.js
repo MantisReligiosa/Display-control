@@ -233,6 +233,7 @@ function masterViewModel(app) {
 
     self.showBackgroundProperties = function () {
         self.backgroundPropertiesMode(true);
+        initializeControls();
         $("#properties")
             .modal({ backdrop: 'static', keyboard: false })
             .modal("show");
@@ -246,9 +247,7 @@ function masterViewModel(app) {
             return;
         };
         self.backgroundPropertiesMode(false);
-        $("#properties")
-            .modal({ backdrop: 'static', keyboard: false })
-            .modal("show");
+        initializeControls();
         if (block.type === 'text') {
             self.textBlockEditViewModel().caption(block.caption);
             self.textBlockEditViewModel().backColor(block.backColor);
@@ -305,6 +304,9 @@ function masterViewModel(app) {
             });
             self.metaBlockEditViewModel().metaFrames(block.frames());
         }
+        $("#properties")
+            .modal({ backdrop: 'static', keyboard: false })
+            .modal("show");
     };
 
     self.applyProperties = function () {

@@ -261,12 +261,16 @@ namespace Services
                 block.Left = metaBlock.Left;
                 block.Top = metaBlock.Top;
                 block.Caption = metaBlock.Caption;
-                var blocksToDelete = block.Details.Frames.SelectMany(f => f.Blocks).Where(dbBlock => !metaBlock.Details.Frames.SelectMany(mf => mf.Blocks).Any(b => b.Id.Equals(dbBlock.Id))).ToList();
+                var blocksToDelete = block.Details.Frames.SelectMany(f => f.Blocks ?? new List<DisplayBlock>()).Where(dbBlock => !metaBlock.Details.Frames.SelectMany(mf => mf.Blocks).Any(b => b.Id.Equals(dbBlock.Id))).ToList();
                 _unitOfWork.DisplayBlocks.DeleteRange(blocksToDelete);
                 var framesToDelete = block.Details.Frames.Where(dbFrame => !metaBlock.Details.Frames.Any(f => f.Id.Equals(dbFrame.Id))).ToList();
                 _unitOfWork.MetablockFrames.DeleteRange(framesToDelete);
                 foreach (var frame in metaBlock.Details.Frames)
                 {
+                    if (frame.Id.Equals(new Guid(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)))
+                    {
+                        frame.Id = Guid.NewGuid();
+                    }
                     var dbFrame = block.Details.Frames.FirstOrDefault(f => f.Id.Equals(frame.Id));
                     if (dbFrame == null)
                     {
