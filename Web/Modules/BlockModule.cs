@@ -43,6 +43,7 @@ namespace Web.Modules
             Post["/api/parseCSV"] = Wrap(ParseCSV, "Ошибка чтения csv");
             Get["/api/downloadConfig"] = DownloadConfig(blockController, serializationController, _logger);
             Post["/api/uploadConfig"] = Wrap(UploadConfig, "Ошибка загрузки конфигурации");
+            Post["/api/cleanup"] = Wrap(Cleanup, "Ошибка удаления блоков");
 
             _savers = new Dictionary<string, Func<dynamic>>()
             {
@@ -62,6 +63,11 @@ namespace Web.Modules
             };
         }
 
+        private void Cleanup()
+        {
+            _blockController.Cleanup();
+        }
+
         private void UploadConfig()
         {
             var data = this.Bind<ConfigDataDto>();
@@ -70,20 +76,28 @@ namespace Web.Modules
             _blockController.Cleanup();
             foreach (var b in configDto.Blocks)
             {
-                if (b is TextBlockDto textBlock)
+                switch (b)
                 {
-                    var block = _mapper.Map<TextBlock>(textBlock);
-                    _blockController.SaveTextBlock(block);
-                }
-                if (b is TableBlockDto tableBlock)
-                {
-                    var block = _mapper.Map<TableBlock>(tableBlock);
-                    _blockController.SaveTableBlock(block);
-                }
-                if (b is PictureBlockDto pictureBlock)
-                {
-                    var block = _mapper.Map<PictureBlock>(pictureBlock);
-                    _blockController.SavePictureBlock(block);
+                    case TextBlockDto textBlockDto:
+                        var textBlock = _mapper.Map<TextBlock>(textBlockDto);
+                        _blockController.SaveTextBlock(textBlock);
+                        break;
+                    case TableBlockDto tableBlockDto:
+                        var tableBlock = _mapper.Map<TableBlock>(tableBlockDto);
+                        _blockController.SaveTableBlock(tableBlock);
+                        break;
+                    case PictureBlockDto pictureBlockDto:
+                        var pictureBlock = _mapper.Map<PictureBlock>(pictureBlockDto);
+                        _blockController.SavePictureBlock(pictureBlock);
+                        break;
+                    case DateTimeBlockDto dateTimeBlockDto:
+                        var datetimeBlock = _mapper.Map<DateTimeBlock>(dateTimeBlockDto);
+                        _blockController.SaveDateTimeBlock(datetimeBlock);
+                        break;
+                    case MetaBlockDto metaBlockDto:
+                        var metablock = _mapper.Map<MetaBlock>(metaBlockDto);
+                        _blockController.SaveMetabLock(metablock);
+                        break;
                 }
             }
         }

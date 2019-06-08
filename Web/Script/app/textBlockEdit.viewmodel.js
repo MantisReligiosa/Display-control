@@ -11,6 +11,8 @@
     self.align = ko.observable(0);
     self.italic = ko.observable(false);
     self.bold = ko.observable(false);
+    self.win1251 = ko.observable(true);
+    self.utf8 = ko.observable(false);
 
 	self.setFont = function (font) {
 		self.selectedFonts.removeAll();

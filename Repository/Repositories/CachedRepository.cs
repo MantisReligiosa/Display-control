@@ -21,6 +21,8 @@ namespace Repository.Repositories
 
         private static Task _taskExecutor;
 
+        private static Mutex mut = new Mutex();
+
         public CachedRepository(DatabaseContext context)
             : base(context)
         {
@@ -34,7 +36,17 @@ namespace Repository.Repositories
                         if (!taskQueue.IsEmpty)
                         {
                             taskQueue.TryDequeue(out IQueuedTask task);
-                            task.Execute();
+                            mut.WaitOne();
+                            try
+                            {
+                                task.Execute();
+                            }
+                            catch
+                            {
+                                _cache = null;
+                                throw;
+                            }
+                            mut.ReleaseMutex();
                         }
                         else
                         {
@@ -51,7 +63,7 @@ namespace Repository.Repositories
             GetCache().Add(item);
             var task = new ItemTask((i) =>
             {
-                var result=base.Create(i as TEntity);
+                var result = base.Create(i as TEntity);
                 Context.SaveChanges();
                 return result;
             }, item);
@@ -88,14 +100,11 @@ namespace Repository.Repositories
 
         public override void DeleteRange(IEnumerable<TEntity> list)
         {
-            foreach (var item in list)
-            {
-                GetCache().Remove(item);
-            }
             var task = new ItemsTask((i) =>
             {
                 base.DeleteRange(i.Select(t => t as TEntity));
                 Context.SaveChanges();
+                GetCache().Clear();
             }, list);
             GetTaskQueue().Enqueue(task);
         }

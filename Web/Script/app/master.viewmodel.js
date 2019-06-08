@@ -575,6 +575,20 @@ function masterViewModel(app) {
 
     };
 
+    self.cleanup = function () {
+        app.request(
+            "POST",
+            "/api/cleanup",
+            null,
+            function (data) {
+                self.blocks.removeAll();
+                $('#blocksTree').jstree(true).delete_node(treenodes);
+                treenodes = [];
+                self.selectedBlock(null);
+            }
+        );
+    }
+
     self.downloadConfig = function () {
         window.location = "/api/downloadConfig";
     }

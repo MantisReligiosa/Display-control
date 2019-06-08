@@ -17,6 +17,9 @@ namespace Web.Profiles
                 .ForMember(b => b.Font, opt => opt.MapFrom(b => b.Details.FontName))
                 .ForMember(b => b.FontSize, opt => opt.MapFrom(b => b.Details.FontSize))
                 .ForMember(b => b.FontIndex, opt => opt.MapFrom(b => b.Details.FontIndex))
+                .ForMember(b => b.Align, opt => opt.MapFrom(b => b.Details.Align))
+                .ForMember(b => b.Italic, opt => opt.MapFrom(b => b.Details.Italic))
+                .ForMember(b => b.Bold, opt => opt.MapFrom(b => b.Details.Bold))
                 .ForMember(b => b.Caption, opt => opt.MapFrom(b => string.IsNullOrEmpty(b.Caption) ? "text" : b.Caption));
 
             CreateMap<TextBlockDto, TextBlock>()
