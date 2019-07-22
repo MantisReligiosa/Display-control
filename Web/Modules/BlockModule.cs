@@ -15,18 +15,21 @@ namespace Web.Modules
     {
         private readonly IBlockController _blockController;
         private readonly ISerializationController _serializationController;
+        private readonly IExcelTableProvider _tableProvider;
 
-        private readonly Dictionary<string, Func<dynamic>> _savers;
+        private readonly Dictionary<string, Func<BlockDto, dynamic>> _savers;
         private readonly Dictionary<string, Func<object>> _copiers;
 
         public BlockModule(
             IBlockController blockController,
-            ISerializationController serializationController
+            ISerializationController serializationController,
+            IExcelTableProvider tableProvider
             )
             : base()
         {
             _blockController = blockController;
             _serializationController = serializationController;
+            _tableProvider = tableProvider;
 
             Post["/api/setBackground"] = Wrap(SetBackground, "Ошибка установки фона");
             Get["/api/background"] = Wrap(GetBackground, "Ошибка загрузки фона");
@@ -40,18 +43,19 @@ namespace Web.Modules
             Post["/api/saveBlock"] = Wrap(SaveBlock, "Ошибка сохранения блоков");
             Post["/api/deleteBlock"] = Wrap(DeleteBlock, "Ошибка удаления блоков");
             Post["/api/copyBlock"] = Wrap(CopyBlock, "Ошибка копирования блоков");
-            Post["/api/parseCSV"] = Wrap(ParseCSV, "Ошибка чтения csv");
+            Post["/api/parseTable"] = Wrap(ParseTable, "Ошибка чтения таблицы");
+            //Post["/api/parseExcel"] = Wrap(ParseExcel, "Ошибка чтения Excel");
             Get["/api/downloadConfig"] = DownloadConfig(blockController, serializationController, _logger);
             Post["/api/uploadConfig"] = Wrap(UploadConfig, "Ошибка загрузки конфигурации");
             Post["/api/cleanup"] = Wrap(Cleanup, "Ошибка удаления блоков");
 
-            _savers = new Dictionary<string, Func<dynamic>>()
+            _savers = new Dictionary<string, Func<BlockDto,dynamic>>()
             {
-                { "text", () => SaveBlock<TextBlock, TextBlockDto>(b => _mapper.Map<TextBlockDto>(blockController.SaveTextBlock(b))) },
-                { "table", () => SaveBlock<TableBlock, TableBlockDto>(b => _mapper.Map<TableBlockDto>(blockController.SaveTableBlock(b))) },
-                { "picture", () => SaveBlock<PictureBlock, PictureBlockDto>(b => _mapper.Map<PictureBlockDto>(blockController.SavePictureBlock(b))) },
-                { "datetime", () => SaveBlock<DateTimeBlock, DateTimeBlockDto>(b => _mapper.Map<DateTimeBlockDto>(blockController.SaveDateTimeBlock(b))) },
-                { "meta", () => SaveBlock<MetaBlock, MetaBlockDto>(b => _mapper.Map<MetaBlockDto>(blockController.SaveMetabLock(b))) }
+                { "text", (dto) => SaveBlock<TextBlock, TextBlockDto>(dto, b => _mapper.Map<TextBlockDto>(blockController.SaveTextBlock(b))) },
+                { "table", (dto) => SaveBlock<TableBlock, TableBlockDto>(dto, b => _mapper.Map<TableBlockDto>(blockController.SaveTableBlock(b))) },
+                { "picture", (dto) => SaveBlock<PictureBlock, PictureBlockDto>(dto, b => _mapper.Map<PictureBlockDto>(blockController.SavePictureBlock(b))) },
+                { "datetime", (dto) => SaveBlock<DateTimeBlock, DateTimeBlockDto>(dto, b => _mapper.Map<DateTimeBlockDto>(blockController.SaveDateTimeBlock(b))) },
+                { "meta", (dto) => SaveBlock<MetaBlock, MetaBlockDto>(dto,b => _mapper.Map<MetaBlockDto>(blockController.SaveMetabLock(b))) }
             };
             _copiers = new Dictionary<string, Func<object>>
             {
@@ -130,14 +134,44 @@ namespace Web.Modules
             };
         }
 
-        private CsvTableDto ParseCSV()
+        private ParsedTableDto ParseTable()
+        {
+            var bindedData = this.Bind<TableDataDto>();
+            TableType tableType = TableType.Unknown;
+            if (bindedData.Extension.Equals("csv", StringComparison.InvariantCultureIgnoreCase))
+                tableType = TableType.CSV;
+            else if (bindedData.Extension.Equals("xls", StringComparison.InvariantCultureIgnoreCase))
+                tableType = TableType.Excel;
+            _tableProvider.LoadData(bindedData.Context, tableType);
+            var result = new ParsedTableDto();
+            result.Header.AddRange(_tableProvider.Header);
+            var rowIndex = 0;
+            foreach (var cells in _tableProvider.Rows)
+            {
+                var delta = cells.Count() - result.Header.Count;
+                if (delta > 0)
+                    for (int i = 0; i < delta; i++)
+                    {
+                        result.Header.Add(string.Empty);
+                    }
+                result.Rows.Add(new RowDto
+                {
+                    Index = rowIndex,
+                    Cells = cells.ToArray()
+                });
+                rowIndex++;
+            }
+            return result;
+        }
+        /*
+        private ParsedTableDto ParseCSV()
         {
             var linesSeparator = new char[] { '\r', '\n' };
             var itemSeparator = ',';
 
-            var data = this.Bind<CsvDataDto>();
+            var data = this.Bind<TableDataDto>();
             var lines = data.Text.Split(linesSeparator, StringSplitOptions.RemoveEmptyEntries);
-            var result = new CsvTableDto();
+            var result = new ParsedTableDto();
             result.Header.AddRange(lines.First().Split(itemSeparator));
             var rowIndex = 0;
             foreach (var line in lines.Skip(1))
@@ -159,6 +193,7 @@ namespace Web.Modules
 
             return result;
         }
+        */
 
         private object CopyBlock()
         {
@@ -174,8 +209,11 @@ namespace Web.Modules
 
         private dynamic SaveBlock()
         {
-            var data = this.Bind<BlockDto>();
-            return _savers.First(kvp => kvp.Key.Equals(data.Type, StringComparison.InvariantCultureIgnoreCase)).Value.Invoke();
+            var data = this.Bind<BlockDto>(new BindingConfig
+            {
+                IgnoreErrors = true
+            });
+            return _savers.First(kvp => kvp.Key.Equals(data.Type, StringComparison.InvariantCultureIgnoreCase)).Value.Invoke(data);
         }
 
         private void MoveAndResize()
@@ -234,11 +272,11 @@ namespace Web.Modules
             _blockController.SetBackground(data.Color);
         }
 
-        private dynamic SaveBlock<TBlock, TBlockDto>(Func<TBlock, dynamic> saveAction)
+        private dynamic SaveBlock<TBlock, TBlockDto>(BlockDto dto, Func<TBlock, dynamic> saveAction)
             where TBlock : DisplayBlock
             where TBlockDto : BlockDto
         {
-            var b = this.Bind<TBlockDto>();
+            var b = dto as TBlockDto;
             var block = _mapper.Map<TBlock>(b);
             return saveAction.Invoke(block);
         }

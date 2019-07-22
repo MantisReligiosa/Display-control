@@ -104,6 +104,18 @@
     <Compile Include="Migrations\201903301330090_MetablockFrameParams.Designer.cs">
       <DependentUpon>201903301330090_MetablockFrameParams.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201907101730154_MetablockFrameSchedule.cs" />
+    <Compile Include="Migrations\201907101730154_MetablockFrameSchedule.Designer.cs">
+      <DependentUpon>201907101730154_MetablockFrameSchedule.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201907101812328_MetablockFrameScheduleEdit.cs" />
+    <Compile Include="Migrations\201907101812328_MetablockFrameScheduleEdit.Designer.cs">
+      <DependentUpon>201907101812328_MetablockFrameScheduleEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201907191659391_FrameUseInTimeInterval.cs" />
+    <Compile Include="Migrations\201907191659391_FrameUseInTimeInterval.Designer.cs">
+      <DependentUpon>201907191659391_FrameUseInTimeInterval.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueuedTasks\GuidTask.cs" />
@@ -159,6 +171,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201903301330090_MetablockFrameParams.resx">
       <DependentUpon>201903301330090_MetablockFrameParams.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201907101730154_MetablockFrameSchedule.resx">
+      <DependentUpon>201907101730154_MetablockFrameSchedule.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201907101812328_MetablockFrameScheduleEdit.resx">
+      <DependentUpon>201907101812328_MetablockFrameScheduleEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201907191659391_FrameUseInTimeInterval.resx">
+      <DependentUpon>201907191659391_FrameUseInTimeInterval.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

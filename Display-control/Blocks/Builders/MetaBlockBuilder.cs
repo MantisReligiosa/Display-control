@@ -1,5 +1,6 @@
 ﻿using DomainObjects.Blocks;
 using DomainObjects.Blocks.Details;
+using Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,15 @@ namespace Display_control.Blocks.Builders
 {
     public class MetaBlockBuilder : AbstractBuilder
     {
-        private List<UIElement> _blocks = new List<UIElement>();
+        private readonly List<UIElement> _blocks = new List<UIElement>();
         private SortedList<int, MetablockFrame> _sortedFrames = new SortedList<int, MetablockFrame>();
-        private int _currentPosition = 0;
+        private int _currentFrameIndex = int.MinValue;
+        private MetablockScheduler _metablockScheduler;
+
+        public MetaBlockBuilder(MetablockScheduler metablockScheduler)
+        {
+            _metablockScheduler = metablockScheduler;
+        }
 
         public override UIElement BuildElement(DisplayBlock displayBlock)
         {
@@ -28,45 +35,50 @@ namespace Display_control.Blocks.Builders
 
             foreach (var frame in metablock.Details.Frames)
                 _sortedFrames.Add(frame.Index, frame);
-            var firstFrameKvp = _sortedFrames.First();
-            var firstFrame = firstFrameKvp.Value;
 
-            foreach (var block in metablock.Details.Frames.SelectMany(f => f.Blocks))
-            {
-                var element = blockBuilder.BuildElement(block);
-                if (element != null)
-                {
-                    element.Uid = block.MetablockFrameId.ToString();
-                    _blocks.Add(element);
-                    canvas.Children.Add(element);
-                }
-            }
-
-            SetFrameVisibility(firstFrame.Id);
+            _metablockScheduler.Frames = _sortedFrames.Values.ToList();
 
             var timer = new Timer
             {
                 AutoReset = true,
-                Interval = firstFrame.Duration * 1000,
+                Interval = 0,
                 Enabled = true
             };
 
             timer.Elapsed += (o, args) =>
             {
-                _currentPosition++;
-                if (_currentPosition == _sortedFrames.Count)
+                var currentDateTime = DateTime.Now;
+                var frameToShow = _metablockScheduler.GetNextFrame(currentDateTime, _currentFrameIndex);
+                if (frameToShow == null)
                 {
-                    _currentPosition = 0;
+                    _currentFrameIndex = int.MinValue;
+                    timer.Interval = 1000;
+                    HideAllFrames();
                 }
-                var frame = _sortedFrames.ElementAt(_currentPosition).Value;
-                SetFrameVisibility(frame.Id);
-                timer.Interval = frame.Duration * 1000;
+                else
+                {
+                    SetFrameVisibility(frameToShow.Id);
+                    _currentFrameIndex = frameToShow.Index;
+                    timer.Interval = frameToShow.Duration * 1000;
+                }
+
             };
 
             Canvas.SetTop(canvas, metablock.Top);
             Canvas.SetLeft(canvas, metablock.Left);
             Panel.SetZIndex(canvas, metablock.ZIndex);
             return canvas;
+        }
+
+        private void HideAllFrames()
+        {
+            _dispatcher.Invoke(() =>
+            {
+                foreach (var block in _blocks)
+                {
+                    block.Visibility = Visibility.Collapsed;
+                }
+            });
         }
 
         private void SetFrameVisibility(Guid frameId)

@@ -150,6 +150,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="assets\30px.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="assets\32px.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -381,8 +384,8 @@
     <Compile Include="Models\ConfigDataDto.cs" />
     <Compile Include="Models\ConfigDto.cs" />
     <Compile Include="Models\CreditsRequest.cs" />
-    <Compile Include="Models\CsvDataDto.cs" />
-    <Compile Include="Models\CsvTableDto.cs" />
+    <Compile Include="Models\TableDataDto.cs" />
+    <Compile Include="Models\ParsedTableDto.cs" />
     <Compile Include="Models\Blocks\MetaBlockDto.cs" />
     <Compile Include="Models\SaveBlockRequest.cs" />
     <Compile Include="Models\ScreenBackgroundRequest.cs" />
@@ -416,6 +419,7 @@
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
+    <Content Include="package-lock.json" />
     <None Include="packages.config" />
     <Content Include="Views\Shared\_Layout.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -492,6 +496,10 @@
     <ProjectReference Include="..\DomainObjects\DomainObjects.csproj">
       <Project>{06F3DAFC-55BB-48C1-9742-C7AED7BD1FF2}</Project>
       <Name>DomainObjects</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Infrastructure.TableProviders\Infrastructure.TableProviders.csproj">
+      <Project>{FB3FF46B-7ED4-4303-9BD7-9A2A8EC91190}</Project>
+      <Name>Infrastructure.TableProviders</Name>
     </ProjectReference>
     <ProjectReference Include="..\Repository\Repository.csproj">
       <Project>{199961cf-22df-418c-8343-a846274b3f49}</Project>

@@ -1,30 +1,71 @@
-﻿<div class="form-group">
-    <div id="textBlockText" class="input-group">
+﻿<div class="row">
+    <div id="textBlockText" class="input-group col-md-12">
         <div class="input-group-prepend">
             <span class="input-group-text" id="basic-addon1">Имя</span>
         </div>
         <input type="text" class="form-control" placeholder="Имя блока" data-bind="value:caption" />
     </div>
 </div>
-<div class="form-group">
-    <!--ko foreach: metaFrames-->
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <div class="input-group-text">
-                <input type="checkbox" aria-label="Checkbox for following text input" data-bind="checked: selected">
-            </div>
-            <span class="input-group-text" id="basic-addon1" data-bind="text:'Кадр'+index"></span>
-            <span class="input-group-text" id="basic-addon2">Длительность:</span>
+<div class="row">
+    <div class="col-md-5" style="overflow-y:scroll; height: 360px">
+        <!--ko foreach: metaFrames-->
+        <div data-bind="class: 'form-check framelist', css: {frameSelected: index==$parent.currentFrame.Index() }">
+            <input type="checkbox" aria-label="Checkbox for following text input" data-bind="checked: selected">
+            <a href="#" data-bind="text:'Представление '+index, click: $parent.selectFrame"></a>
         </div>
-        <input type="number" class="form-control" placeholder="Длительность, сек" data-bind="value:duration" />
+        <!--/ko-->
     </div>
-    <!--/ko-->
+    <div class="col-md-7">
+        <span data-bind="text: 'Управление представлением ' + currentFrame.Index()"></span>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon2">Длительность:</span>
+            </div>
+            <input type="number" class="form-control" data-bind="value: currentFrame.Duration" />
+        </div>
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="useInTimeInerval" data-bind="checked: currentFrame.UseInTimeInerval">
+            <label class="form-check-label" for="useInTimeInerval">Определенное время</label>
+        </div>
+        <div class="form-group">
+            <div class='input-group date'>
+                <div class="input-group-prepend">
+                    <span class="input-group-text">С:</span>
+                </div>
+                <input id="timeIntervalFrom" type="text" class="form-control" data-bind="enable: currentFrame.UseInTimeInerval, value: currentFrame.UseFromTime">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class='input-group date'>
+                <div class="input-group-prepend">
+                    <span class="input-group-text">По:</span>
+                </div>
+                <input id="timeIntervalTo" type="text" class="form-control" data-bind="enable: currentFrame.UseInTimeInerval, value: currentFrame.UseToTime">
+            </div>
+        </div>
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="useInDayOfWeek" data-bind="checked: currentFrame.UseInDayOfWeek">
+            <label class="form-check-label" for="useInDayOfWeek">Определенные дни недели</label>
+        </div>
+        <select id="daysOfWeek" multiple="multiple" data-bind="foreach: daysOfWeek">
+            <option data-bind="value: name, text: caption"></option>
+        </select>
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="useInDate" data-bind="checked: currentFrame.UseInDate">
+            <label class="form-check-label" for="useInDate">Определенная дата</label>
+        </div>
+        <div class="form-group">
+            <div class='input-group date'>
+                <input id="dateToUse" type="text" class="form-control" data-bind="enable: currentFrame.UseInDate, value: currentFrame.DateToUse">
+            </div>
+        </div>
+    </div>
 </div>
-<div class="form-group row">
-    <div class="input-group col-md-5">
-        <button class="btn btn-danger" data-bind="click: deleteFrames">Удалить выбранные</button>
+<div class="row">
+    <div class="input-group col-md-6">
+        <button class="btn btn-danger" style="width:inherit" data-bind="click: deleteFrames">Удалить выбранные</button>
     </div>
-    <div class="input-group col-md-5">
-        <button class="btn btn-success" data-bind="click: addFrame">Добавить кадр</button>
+    <div class="input-group col-md-6">
+        <button class="btn btn-success" style="width:inherit" data-bind="click: addFrame">Добавить представление</button>
     </div>
 </div>

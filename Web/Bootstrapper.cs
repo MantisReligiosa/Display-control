@@ -2,6 +2,7 @@
 using DataExchange.DTO;
 using DataExchange.Requests;
 using DataExchange.Responces;
+using Infrastructure.TableProviders;
 using Nancy;
 using Nancy.Authentication.Forms;
 using Nancy.Bootstrapper;
@@ -12,6 +13,8 @@ using NLog;
 using Repository;
 using ServiceInterfaces;
 using Services;
+using System;
+using System.Collections.Generic;
 using Web.Bundles;
 using Web.Bundles.Web.Bundles;
 
@@ -23,7 +26,8 @@ namespace Web
         protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
         {
             _log.Trace("Application starting");
-            //var config = container.Resolve<IConfigSettings>();
+
+            Nancy.Json.JsonSettings.MaxJsonLength = int.MaxValue;
 
             container.AttachNancyBundle<BundleConfig>(cfg =>
             {
@@ -42,6 +46,8 @@ namespace Web
             container.Register<IOperationController, OperationController>();
             container.Register<ISerializationController, SerializationController>();
             container.Register<ILogger>(_log);
+
+            container.Register<IExcelTableProvider, ExcelTableProvider>();
 
             CustomStatusCode.AddCode(404);
             CustomStatusCode.AddCode(500);

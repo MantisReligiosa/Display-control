@@ -3,22 +3,26 @@
   "name": "myapp",
   "private": true,
   "devDependencies": {
-    "grunt": "1.0.3",
+    "grunt": "1.0.4",
     "load-grunt-tasks": "4.0.0",
     "grunt-contrib-clean": "2.0.0",
-    "grunt-contrib-concat": "1.0.1",
-    "grunt-contrib-copy": "1.0.0"
+    "grunt-contrib-copy": "1.0.0",
+    "grunt-contrib-uglify": "4.0.1",
+    "grunt-contrib-cssmin": "3.0.0",
+    "lodash": "4.17.14"
   },
   "dependencies": {
-    "jquery": "3.3.1",
+    "jquery": "3.4.1",
     "knockout": "3.5.0-rc2",
     "popper.js": "1.14.3",
     "toastr": "2.1.4",
-    "interact.js": "1.2.8",
-    "bootstrap": "4.1.0",
+    "interactjs": "1.5.3",
+    "bootstrap": "4.3.1",
     "bootstrap-colorpicker": "3.0.3",
     "jstree": "3.3.7",
     "jstree-bootstrap-theme": "1.0.1",
-    "moment": "2.24.0"
+    "bootstrap-multiselect": "0.9.13",
+    "moment": "2.24.0",
+    "jquery-datetimepicker": "2.5.21"
   }
 }

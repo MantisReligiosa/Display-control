@@ -249,6 +249,7 @@ function masterViewModel(app) {
         self.backgroundPropertiesMode(false);
         initializeControls();
         if (block.type === 'text') {
+            self.textBlockEditViewModel().initializeControls();
             self.textBlockEditViewModel().caption(block.caption);
             self.textBlockEditViewModel().backColor(block.backColor);
             self.textBlockEditViewModel().textColor(block.textColor);
@@ -261,6 +262,7 @@ function masterViewModel(app) {
             self.textBlockEditViewModel().bold(block.bold);
         };
         if (block.type === 'datetime') {
+            self.datetimeBlockEditViewModel().initializeControls();
             self.datetimeBlockEditViewModel().caption(block.caption);
             self.datetimeBlockEditViewModel().backColor(block.backColor);
             self.datetimeBlockEditViewModel().textColor(block.textColor);
@@ -273,6 +275,7 @@ function masterViewModel(app) {
             self.datetimeBlockEditViewModel().bold(block.bold);
         };
         if (block.type === 'table') {
+            self.tableBlockEditViewModel().initializeControls();
             self.tableBlockEditViewModel().caption(block.caption);
             self.tableBlockEditViewModel().setFont(block.font);
             self.tableBlockEditViewModel().setFontSize(block.fontSize);
@@ -302,6 +305,7 @@ function masterViewModel(app) {
             block.frames().forEach(function (frame) {
                 frame.selected = false;
             });
+            self.metaBlockEditViewModel().initializeControls();
             self.metaBlockEditViewModel().metaFrames(block.frames());
         }
         $("#properties")
@@ -670,18 +674,33 @@ function masterViewModel(app) {
     var backColor;
 
     initializeControls = function () {
-        $('#backgroundCP').colorpicker({
+        initializeTree();
+        initializeBackgroundDialog();
+    };
+
+    var isBackgroudDialogInitialized = false;
+    initializeBackgroundDialog = function () {
+        var backgroundCP = $('#backgroundCP');
+        if (!backgroundCP.length || isBackgroudDialogInitialized) {
+            return;
+        }
+        isBackgroudDialogInitialized = true;
+        backgroundCP.colorpicker({
             format: "rgba"
         });
-        $('#backgroundCP').on('colorpickerChange', function (e) {
+        backgroundCP.on('colorpickerChange', function (e) {
             backColor = e.color.toString();
         });
+    }
 
-        self.textBlockEditViewModel().initializeControls();
-        self.tableBlockEditViewModel().initializeControls();
-        self.datetimeBlockEditViewModel().initializeControls();
-
-        $('#blocksTree')
+    var isTreeInitialized = false;
+    initializeTree = function () {
+        var blocktree = $('#blocksTree');
+        if (!blocktree.length || isTreeInitialized) {
+            return;
+        }
+        isTreeInitialized = true;
+        blocktree
             .on('select_node.jstree', function (e, data) {
                 var node = data.node;
                 var type = node.original.type;
@@ -720,7 +739,7 @@ function masterViewModel(app) {
                 }
 
             });
-        $('#blocksTree').jstree({
+        blocktree.jstree({
             'core': {
                 'check_callback': true,
                 'data': treenodes,
@@ -730,12 +749,12 @@ function masterViewModel(app) {
                 },
             }
         });
-    };
+    }
 
     initReact = function () {
         interact('.resize-drag')
             .draggable({
-                inertia: true,
+                inertia: false,
                 restrict: {
                     restriction: '.workspace',
                     endOnly: true,
@@ -1038,7 +1057,7 @@ function masterViewModel(app) {
         metaBlock.frames().sort(function (a, b) { return a.index - b.index }).forEach(function (frame) {
             var node = {};
             node["type"] = "frame";
-            node["text"] = "Кадр" + frame.index;
+            node["text"] = "Представление" + frame.index;
             node["id"] = frame.id;
             node["parent"] = metaBlock.id;
             node["icon"] = frame.checked() ? "Images/metablock_frame_checked.png" : "Images/metablock_frame.png";

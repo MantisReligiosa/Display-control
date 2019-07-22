@@ -339,6 +339,4 @@ tools/
 
 *.msi
 
-Web/package-lock\.json
-
 Web/assets/

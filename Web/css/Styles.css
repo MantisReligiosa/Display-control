@@ -180,6 +180,7 @@ div.tab-content {
 
 input[type=number] {
     background: #fff;
+    width: 50px !important;
 }
 
 .nav-tabs, .tab-content {
@@ -189,6 +190,10 @@ input[type=number] {
 
 .nav-tabs, .tab-content {
     flex: 0 1 auto;
+}
+
+.form-check {
+    display:inline-block !important;
 }
 
 .workspace {
@@ -307,4 +312,17 @@ input[type=number] {
 
 .jstree-proton {
     font-family: unset !important;
+}
+
+.multiselect-container > li > a > label {
+    padding: 3px 20px 3px 10px !important;
+}
+
+.framelist{
+    padding-left:0 !important;
+    width: inherit;
+}
+
+.frameSelected {
+    background: #bbb;
 }

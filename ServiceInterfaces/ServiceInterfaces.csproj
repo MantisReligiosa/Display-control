@@ -49,6 +49,7 @@
     <Compile Include="IRepository.cs" />
     <Compile Include="ISerializationController.cs" />
     <Compile Include="ISystemController.cs" />
+    <Compile Include="IExcelTableProvider.cs" />
     <Compile Include="IUnitOfWork.cs" />
     <Compile Include="IUnitOfWorkFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

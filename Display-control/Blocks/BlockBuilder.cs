@@ -1,5 +1,6 @@
 ﻿using Display_control.Blocks.Builders;
 using DomainObjects.Blocks;
+using Helpers;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -14,7 +15,7 @@ namespace Display_control.Blocks
             {typeof(TableBlock), new TableBlockBuilder() },
             {typeof(PictureBlock), new PictureBlockBuilder() },
             {typeof(DateTimeBlock), new DateTimeBlockBuilder() },
-            {typeof(MetaBlock), new MetaBlockBuilder() }
+            {typeof(MetaBlock), new MetaBlockBuilder(new MetablockScheduler()) }
         };
 
         public UIElement BuildElement(DisplayBlock displayBlock)

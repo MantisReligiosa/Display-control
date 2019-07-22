@@ -25,17 +25,29 @@
 
 <div class="input-group mb-3">
     <div>
-        <input type="file" class="custom-file-input" id="inputFile" accept=".csv" style="display:none">
+        @*<input type="file" class="custom-file-input" id="inputFile" style="display:none" accept=".xls,.xlsx,.csv">*@
+        <input type="file" class="custom-file-input" id="inputFile" style="display:none" data-bind="attr:{accept:accept}">
         <button class="btn btn-primary" data-bind="click: openFileDialog">Импорт из файла</button>
     </div>
+    @*<div style="padding-left: 20px;">
+            <label style="margin-bottom:0">Кодировка:</label>
+            <div id="encoding">
+                <div class="radio">
+                    <label><input type="radio" name="win1251" value="0" data-bind="checked: encoding" checked>Windows-1251</label>
+                </div>
+                <div class="radio">
+                    <label><input type="radio" name="utf8" value="1" data-bind="checked: encoding">UTF-8</label>
+                </div>
+            </div>
+        </div>*@
     <div style="padding-left: 20px;">
-        <label style="margin-bottom:0">Кодировка:</label>
+        <label style="margin-bottom:0">Формат:</label>
         <div id="encoding">
             <div class="radio">
-                <label><input type="radio" name="win1251" value="0" data-bind="checked: encoding" checked>Windows-1251</label>
+                <label><input type="radio" name="csv" value="0" data-bind="checked: format" checked>CSV</label>
             </div>
             <div class="radio">
-                <label><input type="radio" name="utf8" value="1" data-bind="checked: encoding">UTF-8</label>
+                <label><input type="radio" name="excel" value="1" data-bind="checked: format">Excel</label>
             </div>
         </div>
     </div>

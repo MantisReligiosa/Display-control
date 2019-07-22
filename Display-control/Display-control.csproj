@@ -147,6 +147,10 @@
       <Project>{06F3DAFC-55BB-48C1-9742-C7AED7BD1FF2}</Project>
       <Name>DomainObjects</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Helpers\Helpers.csproj">
+      <Project>{8A942BCE-43BB-48C8-AEAE-77036FB58C72}</Project>
+      <Name>Helpers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Web\Web.csproj">
       <Project>{99D22FAC-31C5-4000-A33C-A40163B3231F}</Project>
       <Name>Web</Name>

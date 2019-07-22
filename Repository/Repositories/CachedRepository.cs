@@ -41,10 +41,11 @@ namespace Repository.Repositories
                             {
                                 task.Execute();
                             }
-                            catch
+                            catch (Exception ex)
                             {
                                 _cache = null;
-                                throw;
+                                _fullyCachedEntities = null;
+                                throw ex;
                             }
                             mut.ReleaseMutex();
                         }

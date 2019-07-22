@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DomainObjects.Blocks.Details
 {
@@ -10,7 +11,50 @@ namespace DomainObjects.Blocks.Details
 
         public int Duration { get; set; }
 
-        public MetablockFrame() { }
+        public bool UseInTimeInterval { get; set; }
+
+        public DateTime? UseFromTime { get; set; }
+
+        public DateTime? UseToTime { get; set; }
+
+        public bool UseInDayOfWeek { get; set; }
+
+        /// <summary>
+        /// Пн
+        /// </summary>
+        public bool UseInMon { get; set; }
+        /// <summary>
+        /// Вт
+        /// </summary>
+        public bool UseInTue { get; set; }
+        /// <summary>
+        /// Ср
+        /// </summary>
+        public bool UseInWed { get; set; }
+        /// <summary>
+        /// Чт
+        /// </summary>
+        public bool UseInThu { get; set; }
+        /// <summary>
+        /// Пт
+        /// </summary>
+        public bool UseInFri { get; set; }
+        /// <summary>
+        /// Сб
+        /// </summary>
+        public bool UseInSat { get; set; }
+        /// <summary>
+        /// Вс
+        /// </summary>
+        public bool UseInSun { get; set; }
+
+        public bool UseInDate { get; set; }
+
+        public DateTime? DateToUse { get; set; }
+
+        public MetablockFrame()
+        {
+        }
 
         public MetablockFrame(MetablockFrame source)
         {
@@ -21,8 +65,25 @@ namespace DomainObjects.Blocks.Details
         {
             Index = source.Index;
             Duration = source.Duration;
+
+            UseInTimeInterval = source.UseInTimeInterval;
+            UseFromTime = source.UseFromTime;
+            UseToTime = source.UseToTime;
+
+            UseInDayOfWeek = source.UseInDayOfWeek;
+            UseInMon = source.UseInMon;
+            UseInTue = source.UseInTue;
+            UseInWed = source.UseInWed;
+            UseInThu = source.UseInThu;
+            UseInFri = source.UseInFri;
+            UseInSat = source.UseInSat;
+            UseInSun = source.UseInSun;
+
+            UseInDate = source.UseInDate;
+            DateToUse = source.DateToUse;
+
             Blocks = new List<DisplayBlock>();
-            foreach(var block in source.Blocks)
+            foreach (var block in source.Blocks)
             {
                 var clonedBlock = block.Clone();
                 clonedBlock.MetablockFrameId = Id;

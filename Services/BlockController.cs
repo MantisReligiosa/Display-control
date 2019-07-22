@@ -156,7 +156,7 @@ namespace Services
         {
             var block = _unitOfWork.DisplayBlocks.Create(new MetaBlock
             {
-                Caption = "MetaBlock",
+                Caption = "Scenario",
                 Height = 50,
                 Width = 50,
                 Details = new MetaBlockDetails
@@ -167,17 +167,13 @@ namespace Services
                         {
                             Index = 1,
                             Duration = 5,
-                            Blocks=new List<DisplayBlock>
-                            {
-                            }
+                            Blocks = new List<DisplayBlock>()
                         },
                         new MetablockFrame
                         {
                             Index = 2,
                             Duration = 5,
-                            Blocks=new List<DisplayBlock>
-                            {
-                            }
+                            Blocks = new List<DisplayBlock>()
                         }
                     }
                 }

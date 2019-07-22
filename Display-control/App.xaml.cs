@@ -154,7 +154,7 @@ namespace Display_control
                 Visible = true,
                 ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip()
             };
-            _notifyIcon.ContextMenuStrip.Items.Add("Exit").Click += (s, args) => Current.Shutdown();
+            _notifyIcon.ContextMenuStrip.Items.Add("Выход").Click += (s, args) => Current.Shutdown();
         }
     }
 }
