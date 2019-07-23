@@ -36,6 +36,17 @@ namespace Display_control.Blocks.Builders
             foreach (var frame in metablock.Details.Frames)
                 _sortedFrames.Add(frame.Index, frame);
 
+            foreach(var block in metablock.Details.Frames.SelectMany(f=>f.Blocks))
+            {
+                var element = blockBuilder.BuildElement(block);
+                if (element!=null)
+                {
+                    element.Uid = block.MetablockFrameId.ToString();
+                    _blocks.Add(element);
+                    canvas.Children.Add(element);
+                }
+            }
+
             _metablockScheduler.Frames = _sortedFrames.Values.ToList();
 
             var timer = new Timer

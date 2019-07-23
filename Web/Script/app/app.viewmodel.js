@@ -25,23 +25,11 @@
             headers: {
                 'Accept': 'application/json'
             },
-            statusCode: {
-
-                401: function () {
-                    debugger;
-                },
-                403: function () {
-                    debugger;
-                },
-                404: function () {
-                    debugger;
-                },
-                406: function () {
-                    location.reload(true);
-                }
-            },
             success: successHandler,
             error: function (xhr, ajaxOptions, thrownError) {
+                if (xhr.status === 406) {
+                    location.reload(true);
+                }
                 toastr.error(thrownError);
                 console.error(xhr, ajaxOptions, thrownError);
             }

@@ -794,7 +794,7 @@ function masterViewModel(app) {
         x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx / scale,
             y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy / scale;
 
-        if (event.rect != null) {
+        if (event.deltaRect != null) {
             x = (parseFloat(target.getAttribute('data-x')) || 0);
             y = (parseFloat(target.getAttribute('data-y')) || 0);
 
