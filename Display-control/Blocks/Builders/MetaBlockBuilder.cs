@@ -36,10 +36,10 @@ namespace Display_control.Blocks.Builders
             foreach (var frame in metablock.Details.Frames)
                 _sortedFrames.Add(frame.Index, frame);
 
-            foreach(var block in metablock.Details.Frames.SelectMany(f=>f.Blocks))
+            foreach (var block in metablock.Details.Frames.SelectMany(f => f?.Blocks ?? new List<DisplayBlock>()))
             {
                 var element = blockBuilder.BuildElement(block);
-                if (element!=null)
+                if (element != null)
                 {
                     element.Uid = block.MetablockFrameId.ToString();
                     _blocks.Add(element);
@@ -52,7 +52,7 @@ namespace Display_control.Blocks.Builders
             var timer = new Timer
             {
                 AutoReset = true,
-                Interval = 0,
+                Interval = 1,
                 Enabled = true
             };
 

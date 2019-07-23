@@ -101,6 +101,7 @@ namespace Display_control
                     _window.Width = requestData.Screens.Displays.Max(d => d.Left + d.Width) - requestData.Screens.Displays.Min(d => d.Left);
                     _window.Left = requestData.Screens.Displays.Min(d => d.Left);
                     _window.Top = requestData.Screens.Displays.Min(d => d.Top);
+                    _window.Visibility = Visibility.Visible;
                     var bc = new Media.BrushConverter();
                     var border = new Border();
                     if (ColorConverter.TryToParseRGB(requestData.Background, out string colorHex))
