@@ -3,6 +3,7 @@ using Nancy;
 using Nancy.Security;
 using NLog;
 using System;
+using Web.Models;
 using Web.Profiles;
 
 namespace Web.Modules
@@ -20,19 +21,21 @@ namespace Web.Modules
 
         protected Func<dynamic, dynamic> Wrap<TResponceModel>(Func<TResponceModel> func, string errorMsg)
         {
-            try
-            {
-                return parameters =>
+            return parameters =>
                 {
-                    return Response.AsJson(func.Invoke());
+                    try
+                    {
+
+                        return Response.AsJson(func.Invoke());
+
+                    }
+                    catch (Exception ex)
+                    {
+                        var exception = new Exception(errorMsg, ex);
+                        _logger.Error(exception);
+                        return Response.AsJson(new ErrorResponce { ErrorMessage = errorMsg });
+                    }
                 };
-            }
-            catch (Exception ex)
-            {
-                var exception = new Exception(errorMsg, ex);
-                _logger.Error(exception);
-                throw exception;
-            }
         }
 
         protected Func<dynamic, dynamic> Wrap(Action action, string errorMsg)

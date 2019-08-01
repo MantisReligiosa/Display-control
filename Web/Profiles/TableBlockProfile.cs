@@ -12,7 +12,7 @@ namespace Web.Profiles
         public TableBlockProfile()
         {
             CreateMap<TableBlock, TableBlockDto>()
-                .ForMember(b => b.Type, opt => opt.MapFrom(b => "table"))
+                .ForMember(b => b.Type, opt => opt.MapFrom(b => BlockType.Table))
                 .ForMember(b => b.Font, opt => opt.MapFrom(b => b.Details.FontName))
                 .ForMember(b => b.FontSize, opt => opt.MapFrom(b => b.Details.FontSize))
                 .ForMember(b => b.FontIndex, opt => opt.MapFrom(b => b.Details.FontIndex))

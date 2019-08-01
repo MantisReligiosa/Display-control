@@ -217,4 +217,13 @@
         self.currentFrame.UseInDate(frame.useInDate);
         self.currentFrame.DateToUse(frame.dateToUse);
     }
+
+    self.OnDurableKeyDown = function (ctx, e) {
+        if (!((e.keyCode > 95 && e.keyCode < 106)
+            || (e.keyCode > 47 && e.keyCode < 58)
+            || e.keyCode == 8)) {
+            return false;
+        }
+        return true;
+    }
 }

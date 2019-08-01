@@ -527,6 +527,13 @@ function masterViewModel(app) {
             self.blocks.remove(block);
         }
         block.zIndex++;
+        if (block.type === "meta") {
+            block.frames().forEach(function (frame) {
+                frame.blocks().forEach(function (blockInFrame) {
+                    blockInFrame.zIndex++;
+                });
+            });
+        }
         app.request(
             "POST",
             "/api/saveBlock",
@@ -559,6 +566,13 @@ function masterViewModel(app) {
             self.blocks.remove(block);
         }
         block.zIndex--;
+        if (block.type === "meta") {
+            block.frames().forEach(function (frame) {
+                frame.blocks().forEach(function (blockInFrame) {
+                    blockInFrame.zIndex--;
+                });
+            });
+        }
         app.request(
             "POST",
             "/api/saveBlock",
@@ -678,13 +692,8 @@ function masterViewModel(app) {
         initializeBackgroundDialog();
     };
 
-    var isBackgroudDialogInitialized = false;
     initializeBackgroundDialog = function () {
         var backgroundCP = $('#backgroundCP');
-        if (!backgroundCP.length || isBackgroudDialogInitialized) {
-            return;
-        }
-        isBackgroudDialogInitialized = true;
         backgroundCP.colorpicker({
             format: "rgba"
         });

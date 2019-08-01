@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Linq;
 
 namespace Web.Models.Blocks.Converter
 {
@@ -19,11 +20,15 @@ namespace Web.Models.Blocks.Converter
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var jObject = JObject.Load(reader);
-            var type = jObject["type"].Value<string>();
-            switch (type)
+            if (jObject["type"].Value<string>().Equals("meta", StringComparison.InvariantCultureIgnoreCase))
+                return DeserializeMetaBlock(jObject);
+            return DeserializeSimpleBlock(jObject);
+        }
+
+        private static BlockDto DeserializeSimpleBlock(JObject jObject)
+        {
+            switch (jObject["type"].Value<string>())
             {
-                case "meta":
-                    return JsonConvert.DeserializeObject<MetaBlockDto>(jObject.ToString(), _specifiedSubclassConversion);
                 case "datetime":
                     return JsonConvert.DeserializeObject<DateTimeBlockDto>(jObject.ToString(), _specifiedSubclassConversion);
                 case "picture":
@@ -34,6 +39,18 @@ namespace Web.Models.Blocks.Converter
                     return JsonConvert.DeserializeObject<TextBlockDto>(jObject.ToString(), _specifiedSubclassConversion);
             }
             throw new NotImplementedException();
+        }
+
+        private static object DeserializeMetaBlock(JObject jMetablockObject)
+        {
+            var metablockDto = JsonConvert.DeserializeObject<MetaBlockDto>(jMetablockObject.ToString(), _specifiedSubclassConversion);
+            foreach (var jFrame in jMetablockObject["frames"].AsJEnumerable())
+            {
+                var id = new Guid(jFrame["id"].Value<string>());
+                var frameDto = metablockDto.Frames.First(f => f.Id.Equals(id));
+                frameDto.Blocks = jFrame["blocks"].AsJEnumerable().Select(jBlock => DeserializeSimpleBlock(jBlock as JObject)).ToList();
+            }
+            return metablockDto;
         }
 
         public override bool CanWrite

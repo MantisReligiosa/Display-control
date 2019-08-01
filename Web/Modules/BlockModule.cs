@@ -1,4 +1,4 @@
-﻿using DomainObjects.Blocks;
+using DomainObjects.Blocks;
 using Nancy;
 using Nancy.ModelBinding;
 using NLog;
@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Web.Models;
 using Web.Models.Blocks;
+using Web.Profiles;
 
 namespace Web.Modules
 {
@@ -19,6 +20,7 @@ namespace Web.Modules
 
         private readonly Dictionary<string, Func<BlockDto, dynamic>> _savers;
         private readonly Dictionary<string, Func<object>> _copiers;
+        private readonly Dictionary<string, Func<BlockDto, DisplayBlock>> _blockDtoConververs;
 
         public BlockModule(
             IBlockController blockController,
@@ -44,27 +46,47 @@ namespace Web.Modules
             Post["/api/deleteBlock"] = Wrap(DeleteBlock, "Ошибка удаления блоков");
             Post["/api/copyBlock"] = Wrap(CopyBlock, "Ошибка копирования блоков");
             Post["/api/parseTable"] = Wrap(ParseTable, "Ошибка чтения таблицы");
-            //Post["/api/parseExcel"] = Wrap(ParseExcel, "Ошибка чтения Excel");
             Get["/api/downloadConfig"] = DownloadConfig(blockController, serializationController, _logger);
             Post["/api/uploadConfig"] = Wrap(UploadConfig, "Ошибка загрузки конфигурации");
             Post["/api/cleanup"] = Wrap(Cleanup, "Ошибка удаления блоков");
 
-            _savers = new Dictionary<string, Func<BlockDto,dynamic>>()
+            _savers = new Dictionary<string, Func<BlockDto, dynamic>>()
             {
-                { "text", (dto) => SaveBlock<TextBlock, TextBlockDto>(dto, b => _mapper.Map<TextBlockDto>(blockController.SaveTextBlock(b))) },
-                { "table", (dto) => SaveBlock<TableBlock, TableBlockDto>(dto, b => _mapper.Map<TableBlockDto>(blockController.SaveTableBlock(b))) },
-                { "picture", (dto) => SaveBlock<PictureBlock, PictureBlockDto>(dto, b => _mapper.Map<PictureBlockDto>(blockController.SavePictureBlock(b))) },
-                { "datetime", (dto) => SaveBlock<DateTimeBlock, DateTimeBlockDto>(dto, b => _mapper.Map<DateTimeBlockDto>(blockController.SaveDateTimeBlock(b))) },
-                { "meta", (dto) => SaveBlock<MetaBlock, MetaBlockDto>(dto,b => _mapper.Map<MetaBlockDto>(blockController.SaveMetabLock(b))) }
+                { BlockType.Text, (dto) => SaveBlock<TextBlock, TextBlockDto>(dto, b => _mapper.Map<TextBlockDto>(blockController.SaveTextBlock(b))) },
+                { BlockType.Table, (dto) => SaveBlock<TableBlock, TableBlockDto>(dto, b => _mapper.Map<TableBlockDto>(blockController.SaveTableBlock(b))) },
+                { BlockType.Picture, (dto) => SaveBlock<PictureBlock, PictureBlockDto>(dto, b => _mapper.Map<PictureBlockDto>(blockController.SavePictureBlock(b))) },
+                { BlockType.Datetime, (dto) => SaveBlock<DateTimeBlock, DateTimeBlockDto>(dto, b => _mapper.Map<DateTimeBlockDto>(blockController.SaveDateTimeBlock(b))) },
+                { BlockType.Meta, (dto) => SaveBlock<MetaBlock, MetaBlockDto>(dto, b => _mapper.Map<MetaBlockDto>(blockController.SaveMetabLock(b)), CastBlocksInFrames) }
             };
             _copiers = new Dictionary<string, Func<object>>
             {
-                { "text" , () => CopyBlock<TextBlock, TextBlockDto>(b => blockController.CopyTextBlock(b)) },
-                { "table" , () => CopyBlock<TableBlock, TableBlockDto>(b => blockController.CopyTableBlock(b)) },
-                { "picture" , () => CopyBlock<PictureBlock, PictureBlockDto>(b => blockController.CopyPictureBlock(b)) },
-                { "datetime" , () => CopyBlock<DateTimeBlock, DateTimeBlockDto>(b => blockController.CopyDateTimeBlock(b)) },
-                { "meta", () => CopyBlock<MetaBlock, MetaBlockDto>(b => blockController.CopyMetabLock(b)) }
+                { BlockType.Text , () => CopyBlock<TextBlock, TextBlockDto>(b => blockController.CopyTextBlock(b)) },
+                { BlockType.Table , () => CopyBlock<TableBlock, TableBlockDto>(b => blockController.CopyTableBlock(b)) },
+                { BlockType.Picture , () => CopyBlock<PictureBlock, PictureBlockDto>(b => blockController.CopyPictureBlock(b)) },
+                { BlockType.Datetime , () => CopyBlock<DateTimeBlock, DateTimeBlockDto>(b => blockController.CopyDateTimeBlock(b)) },
+                { BlockType.Meta, () => CopyBlock<MetaBlock, MetaBlockDto>(b => blockController.CopyMetabLock(b)) }
             };
+            _blockDtoConververs = new Dictionary<string, Func<BlockDto, DisplayBlock>>
+            {
+                { BlockType.Text, dto => _mapper.Map<TextBlock>(dto as TextBlockDto) },
+                { BlockType.Table, dto => _mapper.Map<TableBlock>(dto as TableBlockDto) },
+                { BlockType.Picture, dto => _mapper.Map<PictureBlock>(dto as PictureBlockDto) },
+                { BlockType.Datetime, dto => _mapper.Map<DateTimeBlock>(dto as DateTimeBlockDto) }
+            };
+        }
+
+        private void CastBlocksInFrames(BlockDto blockDto, MetaBlock metablock)
+        {
+            var metablockDto = blockDto as MetaBlockDto;
+            foreach (var frameDto in metablockDto.Frames)
+            {
+                var frame = metablock.Details.Frames.FirstOrDefault(f => f.Id.Equals(frameDto.Id));
+                frame.Blocks = frameDto.Blocks.Select(frameBlockDto =>
+                     _blockDtoConververs
+                        .First(kvp => kvp.Key.Equals(frameBlockDto.Type, StringComparison.InvariantCultureIgnoreCase))
+                            .Value.Invoke(frameBlockDto)
+                ).ToList();
+            }
         }
 
         private void Cleanup()
@@ -163,37 +185,6 @@ namespace Web.Modules
             }
             return result;
         }
-        /*
-        private ParsedTableDto ParseCSV()
-        {
-            var linesSeparator = new char[] { '\r', '\n' };
-            var itemSeparator = ',';
-
-            var data = this.Bind<TableDataDto>();
-            var lines = data.Text.Split(linesSeparator, StringSplitOptions.RemoveEmptyEntries);
-            var result = new ParsedTableDto();
-            result.Header.AddRange(lines.First().Split(itemSeparator));
-            var rowIndex = 0;
-            foreach (var line in lines.Skip(1))
-            {
-                var cells = line.Split(itemSeparator);
-                var delta = cells.Length - result.Header.Count;
-                if (delta > 0)
-                    for (int i = 0; i < delta; i++)
-                    {
-                        result.Header.Add(string.Empty);
-                    }
-                result.Rows.Add(new RowDto
-                {
-                    Index = rowIndex,
-                    Cells = cells
-                });
-                rowIndex++;
-            }
-
-            return result;
-        }
-        */
 
         private object CopyBlock()
         {
@@ -272,12 +263,16 @@ namespace Web.Modules
             _blockController.SetBackground(data.Color);
         }
 
-        private dynamic SaveBlock<TBlock, TBlockDto>(BlockDto dto, Func<TBlock, dynamic> saveAction)
+        private dynamic SaveBlock<TBlock, TBlockDto>(BlockDto dto, Func<TBlock, dynamic> saveAction, Action<BlockDto, TBlock> afterMapping = null)
             where TBlock : DisplayBlock
             where TBlockDto : BlockDto
         {
             var b = dto as TBlockDto;
             var block = _mapper.Map<TBlock>(b);
+            if (afterMapping != null)
+            {
+                afterMapping.Invoke(dto, block);
+            }
             return saveAction.Invoke(block);
         }
 

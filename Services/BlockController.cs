@@ -276,6 +276,19 @@ namespace Services
                     {
                         dbFrame.Duration = frame.Duration;
                         dbFrame.Index = frame.Index;
+                        dbFrame.DateToUse = frame.DateToUse;
+                        dbFrame.UseFromTime = frame.UseFromTime;
+                        dbFrame.UseInDate = frame.UseInDate;
+                        dbFrame.UseInDayOfWeek = frame.UseInDayOfWeek;
+                        dbFrame.UseInFri = frame.UseInFri;
+                        dbFrame.UseInMon = frame.UseInMon;
+                        dbFrame.UseInSat = frame.UseInSat;
+                        dbFrame.UseInSun = frame.UseInSun;
+                        dbFrame.UseInThu = frame.UseInThu;
+                        dbFrame.UseInTimeInterval = frame.UseInTimeInterval;
+                        dbFrame.UseInTue = frame.UseInTue;
+                        dbFrame.UseInWed = frame.UseInWed;
+                        dbFrame.UseToTime = frame.UseToTime;
                         foreach (var subBlock in frame.Blocks)
                         {
                             var dbBlock = dbFrame.Blocks.FirstOrDefault(b => b.Id.Equals(subBlock.Id));

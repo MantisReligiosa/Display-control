@@ -10,7 +10,7 @@ namespace Web.Profiles
         public MetaBlockProfile()
         {
             CreateMap<MetaBlock, MetaBlockDto>()
-                .ForMember(b => b.Type, opt => opt.MapFrom(b => "meta"))
+                .ForMember(b => b.Type, opt => opt.MapFrom(b =>BlockType.Meta))
                 .ForMember(b => b.Caption, opt => opt.MapFrom(b => string.IsNullOrEmpty(b.Caption) ? "meta" : b.Caption))
                 .ForMember(b => b.Frames, opt => opt.MapFrom(b => b.Details.Frames));
 
@@ -19,7 +19,8 @@ namespace Web.Profiles
 
             CreateMap<MetablockFrame, MetablockFrameDto>();
 
-            CreateMap<MetablockFrameDto, MetablockFrame>();
+            CreateMap<MetablockFrameDto, MetablockFrame>()
+                .ForMember(dto => dto.Blocks, opt => opt.Ignore());
         }
     }
 }

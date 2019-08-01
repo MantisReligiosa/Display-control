@@ -10,7 +10,7 @@ namespace Web.Profiles
         public DateTimeBlockProfile()
         {
             CreateMap<DateTimeBlock, DateTimeBlockDto>()
-                .ForMember(b => b.Type, opt => opt.MapFrom(b => "datetime"))
+                .ForMember(b => b.Type, opt => opt.MapFrom(b => BlockType.Datetime))
                 .ForMember(b => b.BackColor, opt => opt.MapFrom(b => b.Details.BackColor))
                 .ForMember(b => b.TextColor, opt => opt.MapFrom(b => b.Details.TextColor))
                 .ForMember(b => b.Font, opt => opt.MapFrom(b => b.Details.FontName))

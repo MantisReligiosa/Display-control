@@ -10,7 +10,7 @@ namespace Web.Profiles
         public TextBlockProfile()
         {
             CreateMap<TextBlock, TextBlockDto>()
-                .ForMember(b => b.Type, opt => opt.MapFrom(b => "text"))
+                .ForMember(b => b.Type, opt => opt.MapFrom(b => BlockType.Text))
                 .ForMember(b => b.Text, opt => opt.MapFrom(b => b.Details.Text))
                 .ForMember(b => b.BackColor, opt => opt.MapFrom(b => b.Details.BackColor))
                 .ForMember(b => b.TextColor, opt => opt.MapFrom(b => b.Details.TextColor))
