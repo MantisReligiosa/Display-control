@@ -81,11 +81,11 @@ namespace Web.Modules
             foreach (var frameDto in metablockDto.Frames)
             {
                 var frame = metablock.Details.Frames.FirstOrDefault(f => f.Id.Equals(frameDto.Id));
-                frame.Blocks = frameDto.Blocks.Select(frameBlockDto =>
+                frame.Blocks = frameDto.Blocks?.Select(frameBlockDto =>
                      _blockDtoConververs
                         .First(kvp => kvp.Key.Equals(frameBlockDto.Type, StringComparison.InvariantCultureIgnoreCase))
                             .Value.Invoke(frameBlockDto)
-                ).ToList();
+                ).ToList() ?? new List<DisplayBlock>();
             }
         }
 

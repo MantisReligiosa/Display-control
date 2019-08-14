@@ -46,9 +46,12 @@ namespace Web.Models.Blocks.Converter
             var metablockDto = JsonConvert.DeserializeObject<MetaBlockDto>(jMetablockObject.ToString(), _specifiedSubclassConversion);
             foreach (var jFrame in jMetablockObject["frames"].AsJEnumerable())
             {
-                var id = new Guid(jFrame["id"].Value<string>());
-                var frameDto = metablockDto.Frames.First(f => f.Id.Equals(id));
-                frameDto.Blocks = jFrame["blocks"].AsJEnumerable().Select(jBlock => DeserializeSimpleBlock(jBlock as JObject)).ToList();
+                if (jFrame["id"] != null)
+                {
+                    var id = new Guid(jFrame["id"].Value<string>());
+                    var frameDto = metablockDto.Frames.First(f => f.Id.Equals(id));
+                    frameDto.Blocks = jFrame["blocks"].AsJEnumerable().Select(jBlock => DeserializeSimpleBlock(jBlock as JObject)).ToList();
+                }
             }
             return metablockDto;
         }
