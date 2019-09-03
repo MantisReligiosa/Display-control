@@ -51,10 +51,20 @@ namespace Display_control.Blocks.Builders
 
             var timer = new Timer
             {
-                AutoReset = true,
+#if !DEBUG
+                    AutoReset = true
+#endif
+#if DEBUG
+                    AutoReset = false,
+#endif
                 Interval = 1,
                 Enabled = true
             };
+
+#if DEBUG
+            timer.Start();
+#endif
+
 
             timer.Elapsed += (o, args) =>
             {
@@ -72,7 +82,9 @@ namespace Display_control.Blocks.Builders
                     _currentFrameIndex = frameToShow.Index;
                     timer.Interval = frameToShow.Duration * 1000;
                 }
-
+#if DEBUG
+                timer.Start();
+#endif
             };
 
             Canvas.SetTop(canvas, metablock.Top);

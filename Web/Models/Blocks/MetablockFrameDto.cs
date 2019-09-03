@@ -10,8 +10,8 @@ namespace Web.Models.Blocks
         public int Index { get; set; }
         public int Duration { get; set; }
         public bool UseInTimeInterval { get; set; }
-        public DateTime? UseFromTime { get; set; }
-        public DateTime? UseToTime { get; set; }
+        public TimeSpan? UseFromTime { get; set; }
+        public TimeSpan? UseToTime { get; set; }
         public bool UseInDayOfWeek { get; set; }
         /// <summary>
         /// Пн

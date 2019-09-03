@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace BusinessLogickTests
+namespace BusinessLogicTests
 {
     public class BlockControllerTest
     {

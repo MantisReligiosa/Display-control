@@ -304,6 +304,15 @@ function masterViewModel(app) {
             self.metaBlockEditViewModel().id(block.id);
             block.frames().forEach(function (frame) {
                 frame.selected = false;
+                if (frame.useFromTime != undefined) {
+                    frame.useFromTime = moment(frame.useFromTime).format("HH:mm");
+                }
+                if (frame.useToTime != undefined) {
+                    frame.useToTime = moment(frame.useToTime).format("HH:mm");
+                }
+                if (frame.dateToUse != undefined) {
+                    frame.dateToUse = moment(frame.dateToUse).format("YYYY-MM-DD");
+                }
             });
             self.metaBlockEditViewModel().initializeControls();
             self.metaBlockEditViewModel().metaFrames(block.frames());
@@ -375,7 +384,13 @@ function masterViewModel(app) {
         }
         if (block.type === 'meta') {
             block.caption = self.metaBlockEditViewModel().caption();
+            self.metaBlockEditViewModel().updateSelectedFrame();
             block.frames(self.metaBlockEditViewModel().metaFrames());
+            block.frames().forEach(function (frame) {
+                if (frame.dateToUse != undefined) {
+                    frame.dateToUse = moment(frame.dateToUse).format("YYYY-MM-DD");
+                }
+            });
         }
         app.request(
             "POST",
@@ -404,6 +419,20 @@ function masterViewModel(app) {
                 data.type = block.type;
                 if (data.type == 'meta') {
                     makeMetablockObservableArrays(data);
+
+                    var metablock = self.blocks().filter(function (block) {
+                        return block.id == data.id;
+                    })[0];
+                    data.frames().forEach(function (frame) {
+                        var existFrame = metablock.frames().filter(function (f) {
+                            return f.index == frame.index;
+                        })[0];
+                        if (existFrame.id == undefined) {
+                            existFrame.id = frame.id;
+                        }
+                    });
+
+
                 }
                 var newNode = getNode(data);
                 if (data.type == 'meta') {
@@ -1002,6 +1031,18 @@ function masterViewModel(app) {
                     }
                     if (block.type == 'meta') {
                         makeMetablockObservableArrays(block);
+                        block.frames().forEach(function (frame) {
+                            frame.selected = false;
+                            if (frame.useFromTime != undefined) {
+                                frame.useFromTime = moment(frame.useFromTime).format("HH:mm");
+                            }
+                            if (frame.useToTime != undefined) {
+                                frame.useToTime = moment(frame.useToTime).format("HH:mm");
+                            }
+                            if (frame.dateToUse != undefined) {
+                                frame.dateToUse = moment(frame.dateToUse).format("YYYY-MM-DD");
+                            }
+                        });
                     }
                     self.blocks.push(block);
                     var node = getNode(block);
@@ -1031,7 +1072,7 @@ function masterViewModel(app) {
             return block.id == metablockId;
         })[0];
         metablock.frames().forEach(function (frame) {
-            frame.checked(frame.id == frameId);
+            frame.checked((frame.id != undefined) && (frame.id == frameId));
             var frameNode = $('#blocksTree').jstree(true).get_node(frame.id);
             $('#blocksTree').jstree(true).set_icon(frameNode, frame.checked() ? "Images/metablock_frame_checked.png" : "Images/metablock_frame.png");
         });

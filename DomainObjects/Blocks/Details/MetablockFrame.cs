@@ -13,9 +13,9 @@ namespace DomainObjects.Blocks.Details
 
         public bool UseInTimeInterval { get; set; }
 
-        public DateTime? UseFromTime { get; set; }
+        public TimeSpan? UseFromTime { get; set; }
 
-        public DateTime? UseToTime { get; set; }
+        public TimeSpan? UseToTime { get; set; }
 
         public bool UseInDayOfWeek { get; set; }
 

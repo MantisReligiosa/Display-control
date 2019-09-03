@@ -1,4 +1,4 @@
-﻿function MetaBlockEditViewModel(master) {
+function MetaBlockEditViewModel(master) {
     var self = this;
 
     self.id = ko.observable();
@@ -145,6 +145,7 @@
 
         dateToUse.datetimepicker({
             timepicker: false,
+            format: 'Y-m-d'
         });
     }
 
@@ -168,32 +169,37 @@
             selected: false,
             index: index,
             duration: 5,
-            blocks: ko.observableArray()
+            blocks: ko.observableArray(),
+            checked: ko.observable(false)
         };
         self.metaFrames.push(frame);
     }
 
+    self.updateSelectedFrame = function () {
+        var currentFrame = self.metaFrames().find(function (f) {
+            return f.index === self.currentFrame.Index();
+        });
+        var currentFramePosition = self.metaFrames.indexOf(currentFrame);
+
+        currentFrame.duration = self.currentFrame.Duration();
+        currentFrame.useInTimeInterval = self.currentFrame.UseInTimeInerval();
+        currentFrame.useFromTime = self.currentFrame.UseFromTime();
+        currentFrame.useToTime = self.currentFrame.UseToTime();
+        currentFrame.useInDayOfWeek = self.currentFrame.UseInDayOfWeek();
+        self.daysOfWeek.forEach(function (dayOfWeek) {
+            var name = dayOfWeek.name;
+            var capitalizedName = name.charAt(0).toUpperCase() + name.slice(1)
+            var observableValue = self.currentFrame['UseIn' + capitalizedName];
+            currentFrame['useIn' + capitalizedName] = observableValue();
+        });
+        currentFrame.useInDate = self.currentFrame.UseInDate();
+        currentFrame.dateToUse = self.currentFrame.DateToUse();
+        self.metaFrames.splice(currentFramePosition, 1, currentFrame);
+    }
+
     self.selectFrame = function (frame) {
         if (self.currentFrame.Index() !== undefined) {
-            var currentFrame = self.metaFrames().find(function (f) {
-                return f.index === self.currentFrame.Index();
-            });
-            var currentFramePosition = self.metaFrames.indexOf(currentFrame);
-
-            currentFrame.duration = self.currentFrame.Duration();
-            currentFrame.useInTimeInterval = self.currentFrame.UseInTimeInerval();
-            currentFrame.useFromTime = self.currentFrame.UseFromTime();
-            currentFrame.useToTime = self.currentFrame.UseToTime();
-            currentFrame.useInDayOfWeek = self.currentFrame.UseInDayOfWeek();
-            self.daysOfWeek.forEach(function (dayOfWeek) {
-                var name = dayOfWeek.name;
-                var capitalizedName = name.charAt(0).toUpperCase() + name.slice(1)
-                var observableValue = self.currentFrame['UseIn' + capitalizedName];
-                currentFrame['useIn' + capitalizedName] = observableValue();
-            });
-            currentFrame.useInDate = self.currentFrame.UseInDate();
-            currentFrame.dateToUse = self.currentFrame.DateToUse();
-            self.metaFrames.splice(currentFramePosition, 1, currentFrame);
+            self.updateSelectedFrame();
         }
         self.currentFrame.Index(frame.index);
         self.currentFrame.Duration(frame.duration);

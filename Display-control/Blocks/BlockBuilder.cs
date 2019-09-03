@@ -26,7 +26,7 @@ namespace Display_control.Blocks
                 {
                     return builder.BuildElement(displayBlock);
                 }
-                catch (Exception ex)
+                catch
                 {
                     return null;
                 }

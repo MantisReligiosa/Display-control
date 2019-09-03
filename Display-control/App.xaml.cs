@@ -4,6 +4,7 @@ using DataExchange.Requests;
 using DataExchange.Responces;
 using Display_control.Blocks;
 using Display_control.Properties;
+using Helpers;
 using Nancy.Hosting.Self;
 using System;
 using System.Linq;
@@ -48,7 +49,7 @@ namespace Display_control
             }
             catch (Exception ex)
             {
-                _notifyIcon.ShowBalloonTip(1, "Display-control", ex.Message, System.Windows.Forms.ToolTipIcon.Error);
+                _notifyIcon.ShowBalloonTip(1, "Display-control", ex.GetInnerException().Message, System.Windows.Forms.ToolTipIcon.Error);
             }
         }
 

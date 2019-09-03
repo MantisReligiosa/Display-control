@@ -116,6 +116,10 @@
     <Compile Include="Migrations\201907191659391_FrameUseInTimeInterval.Designer.cs">
       <DependentUpon>201907191659391_FrameUseInTimeInterval.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201909010702145_MetablockFrameTimespan.cs" />
+    <Compile Include="Migrations\201909010702145_MetablockFrameTimespan.Designer.cs">
+      <DependentUpon>201909010702145_MetablockFrameTimespan.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueuedTasks\GuidTask.cs" />
@@ -180,6 +184,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201907191659391_FrameUseInTimeInterval.resx">
       <DependentUpon>201907191659391_FrameUseInTimeInterval.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909010702145_MetablockFrameTimespan.resx">
+      <DependentUpon>201909010702145_MetablockFrameTimespan.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

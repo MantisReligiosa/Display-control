@@ -277,7 +277,18 @@ namespace Services
                         dbFrame.Duration = frame.Duration;
                         dbFrame.Index = frame.Index;
                         dbFrame.DateToUse = frame.DateToUse;
-                        dbFrame.UseFromTime = frame.UseFromTime;
+                        if (frame.UseFromTime.HasValue)
+                        {
+                            var span = frame.UseFromTime.Value;
+                            span -= new TimeSpan(span.Days, 0, 0, 0);
+                            dbFrame.UseFromTime = span;
+                        }
+                        if (frame.UseToTime.HasValue)
+                        {
+                            var span = frame.UseToTime.Value;
+                            span -= new TimeSpan(span.Days, 0, 0, 0);
+                            dbFrame.UseToTime = span;
+                        }
                         dbFrame.UseInDate = frame.UseInDate;
                         dbFrame.UseInDayOfWeek = frame.UseInDayOfWeek;
                         dbFrame.UseInFri = frame.UseInFri;
@@ -288,7 +299,7 @@ namespace Services
                         dbFrame.UseInTimeInterval = frame.UseInTimeInterval;
                         dbFrame.UseInTue = frame.UseInTue;
                         dbFrame.UseInWed = frame.UseInWed;
-                        dbFrame.UseToTime = frame.UseToTime;
+                        
                         foreach (var subBlock in frame.Blocks)
                         {
                             var dbBlock = dbFrame.Blocks.FirstOrDefault(b => b.Id.Equals(subBlock.Id));
