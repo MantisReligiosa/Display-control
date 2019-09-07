@@ -52,7 +52,7 @@ namespace Display_control.Blocks.Builders
             var timer = new Timer
             {
 #if !DEBUG
-                    AutoReset = true
+                    AutoReset = true,
 #endif
 #if DEBUG
                     AutoReset = false,
